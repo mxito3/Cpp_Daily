@@ -1,0 +1,383 @@
+﻿3
+
+
+
+
+
+// experiment3.cpp : 定义控制台应用程序的入口点。
+//
+
+#include "stdafx.h"
+
+#include "iostream"
+#include <vector>
+using namespace std;
+class Map
+{
+private:
+	int nodeTotal;//节点数量
+	int **map;
+	int **book;
+	vector<int>onWayNode;
+	int totalWay;
+public:
+	void init();
+	void findBestWay(int from,int to);
+};
+void Map::init()
+{
+	totalWay = 0;
+	int num;
+	cout << "please input the number of node" << endl;
+	cin >> num;
+	if (num > 0)
+	{
+		nodeTotal = num;
+	}
+	else
+	{
+		cout << "请输入正确的节点个数";
+		return;
+	}
+	map = new int*[nodeTotal + 1];//0.0里面不放数
+	book = new int*[nodeTotal + 1];
+	for (int i = 1; i <= nodeTotal; i++)
+	{
+		map[i] = new int[nodeTotal + 1];
+		book[i] = new int[nodeTotal + 1];
+	}
+	for (int i = 1; i <= nodeTotal; i++)
+	{
+		for (int j = 1; j <= nodeTotal; j++)
+		{
+			map[i][j] =0;
+			book[i][j] = 0;
+		}
+	}
+	
+
+
+	//输入图
+	
+	for (int i = 1; i <= nodeTotal; i++)
+	{
+		cout << "请输入第 "<<i<<" 个节点的边关系  "<<"如果有关系请输入1 "<<" 如果没关系请输入0 " << endl;
+		for (int j = 1; j <= nodeTotal; j++)
+		{
+			cin >> map[i][j];
+		}
+
+	}
+
+	cout << "你的图是" << endl;
+	for (int i = 1; i <= nodeTotal; i++)
+	{
+		for (int j = 1; j <= nodeTotal; j++)
+		{
+			cout << map[i][j] << "  ";
+		}
+		cout << endl;
+	}
+	cout << "你的邻接矩阵是" << endl;
+	for (int i = 1; i <= nodeTotal; i++)
+	{
+		for (int j = 1; j <= nodeTotal; j++)
+		{
+			cout << book[i][j] << "  ";
+		}
+		cout << endl;
+	}
+}
+void Map::findBestWay(int from,int to)
+{
+	//判断出口
+	//
+	cout << "起点是" << from << endl;
+	onWayNode.push_back(from);
+	if (map[from][to]!=0)
+	{
+		totalWay++;
+		cout << "进来了";
+		onWayNode.push_back(to);
+		cout << "第 " << totalWay << " 条路是：";
+		for (int j = 0; j < onWayNode.size(); j++)
+		{
+			cout << onWayNode[j] << "  ";
+		}
+		onWayNode.clear();
+		return;
+	}
+	for (int j = 1; j <= nodeTotal; j++)//探测
+	{
+		if (map[from][j] != 0 && book[from][j] == 0)
+		{
+			book[from][j] = 1;//标记该点已经尝试过
+			findBestWay(j,to);
+			book[from][j] = 0;//取消标记
+		}
+	}
+	return;//一条路的所有节点都探测完成，就返回
+}
+int main()
+{
+	int from,to;
+	Map *a = new Map();
+	a->init();
+	cout << "请输入起点";
+	cin >> from;
+	cout << "请输入终点";
+	cin >> to;
+	a->findBestWay(from, to);
+	return 0;
+}
+
+1--------------------------------
+// experiment1.cpp : 定义控制台应用程序的入口点。
+//
+
+#include "stdafx.h"
+#include <vector>
+#include "iostream"
+using namespace std;
+class Passenger
+{
+private:
+	int num;//表示船员的编号
+    static vector<int>passengers;
+public:
+	void select_one(int needSelectNum,int step);
+	void addNumber(int totalNum);//加入三十个人
+};
+
+void Passenger::select_one(int needSelectNum,int step)
+{
+	int times = 0;//标记次数
+	int have_selected_num;
+	int mark;
+	int temp;//用来判断是不是到了结尾
+	int m = 0;
+	vector<int>::iterator it;
+	for (it = passengers.begin(); it != passengers.end();)
+	{
+		times++;
+		if (*it == passengers[passengers.size() - 1])//如果到末尾
+		{
+			if (times == step)
+			{
+				mark = *it;
+				passengers.erase(it);
+			
+				times = 0;
+				m++;
+			}
+			it = passengers.begin();//重置为开始的地方
+			continue;
+		}
+		if (times ==step)//一般的地方，并且满足条件
+		{
+			mark = *it;
+			it = passengers.erase(it);
+			times = 0;
+			m++;
+		}
+		else
+		{
+			it++;
+		}
+		if (m == needSelectNum)//如果选出了15个人
+		{
+			for (it = passengers.begin(); it != passengers.end(); it++)
+			{
+				cout << *it << ",";
+			}
+			break;
+		}
+	}
+}
+void Passenger::addNumber(int totalNum)//加30个人
+{
+	for (int i = 1; i <= totalNum; i++)
+	{
+		passengers.push_back(i);
+	}
+}
+vector<int> init()
+{
+	vector<int> a;
+	return a;
+}
+vector<int>  Passenger::passengers(init());
+
+int main()
+{
+	int a, b,c;
+	cout << "请输入总人数" << endl;
+	cin>>a;
+	cout << "请输入需要选出来的人数" << endl;
+	cin >> b;
+	cout << "请输入间隔人数" << endl;
+	cin >> c;
+	Passenger *pa = new Passenger();
+	pa->addNumber(a);
+	pa->select_one(b,c);
+    return 0;
+}
+
+2-----------------------------
+
+// _Tree.cpp : 定义控制台应用程序的入口点。
+//
+
+#include "stdafx.h"
+#include <iostream>
+using namespace std;
+
+typedef struct T
+{
+	struct T *ltree;
+	struct T *rtree;
+	char data;
+	int null_son_num;//空儿子节点个数
+}*tr;
+class tree
+{
+private:
+	tr root = NULL;
+	int leaves_num;
+	float depth;
+public:
+	void in_tree(int k);     
+	void front_out_tree(tr mk);
+	void middle_out_tree(tr mk);
+	void behind_out_tree(tr mk);
+	void creat_tree(tr q, int k);
+	int get_leaves_num();
+float get_depth();
+	tr get_root()
+	{
+		return root;
+	}
+};
+
+int tree::get_leaves_num()
+{
+	return leaves_num;
+}
+
+float tree::get_depth()
+{
+	return depth;
+}
+
+void tree::in_tree(int k)             
+{
+	leaves_num = 0;//叶子节点设置为0
+	depth = 0;
+    char  a;
+	cout << "please input :" << endl;
+	if (!root && 0 == k)//创建根节点     
+	{
+		cin >> a;
+		root = new T;
+		root->data = a;
+		root->ltree = NULL;
+		root->rtree = NULL;
+	}
+	creat_tree(root, 1);//创建左子树
+	creat_tree(root, 2);//创建右子树
+}
+
+void tree::creat_tree(tr q, int k)      
+{
+	char a;
+	cin >> a;
+	tr p;
+	if (',' == a)
+	{
+		q->null_son_num++;
+	}
+	else
+	{
+		
+
+		p = new T;               
+		p->data = a;
+		p->ltree = NULL;           
+		p->rtree = NULL;
+		p->null_son_num = 0;
+		if (1 == k)
+		{
+			q->ltree = p;
+		}
+		if (2 == k)
+		{
+			q->rtree = p;
+		}
+		creat_tree(p, 1);
+		creat_tree(p, 2);
+	}
+	if (q->null_son_num == 2)
+	{
+		leaves_num++;
+	}
+	if (k == 2 && q->null_son_num != 0)
+	{
+		depth += 1;
+	}
+	return;
+}
+
+
+void tree::front_out_tree(tr mk)
+{
+	if (!mk)
+	{
+		return;
+	}
+	cout << mk->data << " ";//访问根节点
+	front_out_tree(mk->ltree);//遍历左子树
+	front_out_tree(mk->rtree);//遍历右子树
+}
+
+void tree::middle_out_tree(tr mk)
+{
+	if (!mk)
+	{
+		return;
+	}
+	middle_out_tree(mk->ltree);//遍历左子树
+	cout << mk->data << " ";//根节点
+	middle_out_tree(mk->rtree);//遍历右子树
+}
+
+
+void tree::behind_out_tree(tr mk)
+{
+	if (!mk)
+	{
+		return;
+	}
+		behind_out_tree(mk->ltree);//遍历左子树
+		behind_out_tree(mk->rtree);//遍厉右子树
+		cout << mk->data << " ";//输出根节点
+	
+}
+
+
+
+int main()
+{
+	tree tb;
+	tb.in_tree(0);
+	tb.middle_out_tree(tb.get_root());      
+	cout << endl;
+	tb.behind_out_tree(tb.get_root());      
+	cout << endl;
+	cout << tb.get_leaves_num();
+	cout << endl;
+	cout << tb.get_depth();
+	cout << endl;
+	return 0;
+}
+
+
